@@ -134,13 +134,14 @@ png("totP og totN Vigga.png", res = 1000, height = 7.2, width = 7.5, units = "in
 par(mfrow = c(2,1), mar = c(2,5,2,2), oma = c(4,2,2,2))
 # Boxplot: om man ønsker å ta med de gamle dataene (94-96) så bruk d.vig
 boxplot(P.TOT ~ year, data = d.vig, log = "y", axes = F, border = NA,
-        ylab = "Total fosfor (µg P/L)")
+        ylab = "")
 rect(xleft = -1, xright = 50, ybottom = 0.1, ytop = 15, col = SG, border = NA)
 rect(xleft = -1, xright = 50, ybottom = 15, ytop = 25, col = G, border = NA)
 rect(xleft = -1, xright = 50, ybottom = 25, ytop = 38, col = M, border = NA)
 rect(xleft = -1, xright = 50, ybottom = 38, ytop = 65, col = D, border = NA)
 rect(xleft = -1, xright = 50, ybottom = 65, ytop = 200, col = SD, border = NA)
-boxplot(P.TOT ~ year, data = d.vig, log = "y", add = T, border = "grey51", las = 2)
+boxplot(P.TOT ~ year, data = d.vig, log = "y", add = T, las = 2)
+mtext("Total fosfor (µg P/L)", side = 2, line = 3.5, cex = 1.2)
 
 # Add gjennomsnitt som punkt
 points(P.TOT ~ year, data = d.vig.mean, col = 1, pch = "*", cex = 1.5, log = "y")
@@ -148,14 +149,15 @@ points(P.TOT ~ year, data = d.vig.mean, col = 1, pch = "*", cex = 1.5, log = "y"
 # TOTN
 with(filter(d, Vannlokalitetsnavn == "Røykenvik" & complete.cases(N.TOT)), table(year))
 boxplot(N.TOT ~ year, data = d.vig, log = "y", axes = F, ylim  = c(250, 8000), border = "grey31",
-        ylab = "Total nitrogen (µg N/L)")
+        ylab = "")
 rect(xleft = -1, xright = 50, ybottom = 0.1, ytop = 425, col = SG, border = NA)
 rect(xleft = -1, xright = 50, ybottom = 425, ytop = 675, col = G, border = NA)
 rect(xleft = -1, xright = 50, ybottom = 675, ytop = 950, col = M, border = NA)
 rect(xleft = -1, xright = 50, ybottom = 950, ytop = 1425, col = D, border = NA)
 rect(xleft = -1, xright = 50, ybottom = 1425, ytop = 10000, col = SD, border = NA)
-boxplot(N.TOT ~ year, data = d.vig, log = "y",add = T, border = "grey51", las = 2)
+boxplot(N.TOT ~ year, data = d.vig, log = "y",add = T, las = 2)
 points(N.TOT  ~ year, data = d.vig.mean, col = 1, pch = "*", cex = 1.5)
+mtext("Total nitrogen (µg N/L)", side = 2, line = 3.5, cex = 1.2)
 dev.off()
 
 ### Fosfat og nitrat ###
@@ -165,14 +167,23 @@ d.vig2year <- factor(d.vig$year, levels = 2014:2021)
 png("PO4 og NO3 Vigga.png", res = 1000, height = 7.2, width = 7.5, units = "in")
 par(mfrow = c(2,1), mar = c(2,5,2,2), oma = c(4,2,2,2))
 # Fosfat
+
 with(filter(d, Vannlokalitetsnavn == "Røykenvik" & complete.cases(PO4.comb)), table(year))
-boxplot(PO4.comb ~ year, data = d.vig2, log = "y")
+boxplot(PO4.comb ~ year, data = d.vig2, log = "", ylab = "", las = 2)
+mtext("Fosfat (µg PO4-P/L)", side = 2, line = 3.5, cex = 1.2)
+abline(h = c(1,2), lty = 2) # Q1 og Q3 basert på total fosfat fra Kjaglielva, Lomma og Kjørstadelva (2017-2021) (<1 satt til 1)
+
 
 # Nitrat
 with(filter(d, Vannlokalitetsnavn == "Røykenvik" & complete.cases(NO3.comb)), table(year))
-boxplot(NO3.comb ~ year, data = d.vig2, log = "y")
+boxplot(NO3.comb ~ year, data = d.vig2, log = "", ylab = "", las = 2, ylim = c(20, 5000))
+mtext("Nitrat (µg NO3+NO2-N/L)", side = 2, line = 3.5, cex = 1.2)
+abline(h = c(90, 215), lty = 2) # Basert på q1 = 90, median = 150 og q3 = 215 an NO3-N fra Kjaglielva, Lomma og Kjørstadelva (2017-2021)
+
+#text(expression(italic("Referansenivå av NO"[3])), x = 2.2, y = 150, font = )
+dev.off()
 
 
 
-
-
+fos <- read.table("clipboard")
+summary(fos)
