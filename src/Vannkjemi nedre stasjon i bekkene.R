@@ -27,10 +27,12 @@ data <- rbind(d.askjum, d.grymyr, d.slovik, d.vang, d.vigga)
 head(data)
 names(data)
 
+filter(data, Vannlokalitetsnavn == "Askjumelva, nedre" & Parameternavn == "Average Score per Taxon (ASPT)")
+
+
 d <- data %>% 
   select(Prøvetakingstidspunkt, Vannlokalitetskode, Vannlokalitetsnavn, Oppdragsgiver, Oppdragstaker,
-                         ParameterID, Parameternavn, PrøvetakingsmetodeID,  Registreringsverdi,
-                         Enhetsnavn, Vitenskapelig.navn, Kommentarer) %>%
+                         ParameterID, Parameternavn, Registreringsverdi) %>%
   rename(dato = Prøvetakingstidspunkt, verdi = Registreringsverdi) %>%
   mutate(dato = ymd(dato)) %>%
   filter(Parameternavn %in% c("Totalnitrogen", "Ammonium", "Nitrat + nitritt", "Nitrat",
@@ -42,10 +44,14 @@ d <- data %>%
                               "Estimert antall fisk (art) per arealenhet")) %>%
   arrange(dato) %>%
   mutate(prove_ID = paste(Vannlokalitetskode, dato, sep = "_")) %>%
-  
+  arrange(Vannlokalitetskode, dato) %>%
+  # For å kvitte meg med dobbeltrapportert ASPT (to like verdier med samme dato...)
+  group_by(Vannlokalitetskode, Vannlokalitetsnavn, Oppdragstaker, Oppdragsgiver, ParameterID, 
+           Parameternavn, prove_ID,dato) %>%
+  summarize_all(median, na.rm = T) %>%
+
   pivot_wider(names_from = ParameterID, values_from = verdi, id_cols = c(Vannlokalitetskode, Vannlokalitetsnavn,
-    dato, Oppdragstaker, Oppdragsgiver, Kommentarer)) %>%
-  select(-Kommentarer) %>%
+    dato, Oppdragstaker, Oppdragsgiver)) %>%
   group_by(Vannlokalitetskode, Vannlokalitetsnavn, Oppdragstaker, Oppdragsgiver, dato) %>%
   summarize_all(median, na.rm =T)  %>%
   arrange(Vannlokalitetskode, dato) %>%
