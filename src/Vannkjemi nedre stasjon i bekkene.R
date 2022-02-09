@@ -63,6 +63,9 @@ d$NO3.comb <- with(d, coalesce(N.NO3, N.SNOX))
 d$year <- year(d$dato)
 d$mnd <- month(d$dato)
 
+# Skriv komplett rådatafil
+write.xlsx(d, "raw data fra nedre stasjon i bekkene.xlsx")
+
 # Se kjapt på dataene
 xyplot(log10(P.TOT) ~ dato | Vannlokalitetsnavn, data = filter(d, year > 2009))
 bwplot(P.TOT ~ factor(year) | Vannlokalitetsnavn, data = filter(d, year > 2009))
